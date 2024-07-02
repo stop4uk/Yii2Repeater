@@ -2,7 +2,11 @@
 
 /**
  * @author relbraun <https://github.com/relbraun>
- * @author stop4uk <stop4uK@yandex.ru>
+ * @source https://github.com/relbraun/yii2-repeater
+ *
+ * @author stop4uk <stop4uk@yandex.ru>
+ * @source https://github.com/stop4uk/Yii2Repeater
+ *
  * @version 1.0
  */
 
@@ -11,9 +15,8 @@ namespace stop4uk\yii2repeater;
 use Yii;
 use yii\base\Widget;
 use yii\db\ActiveRecord;
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 use yii\helpers\Json;
+use yii\bootstrap5\Html;
 
 class Repeater extends Widget
 {
@@ -45,13 +48,9 @@ class Repeater extends Widget
      */
     public $models;
     /**
-     * @var ActiveForm Optional, if you want to use the $form variable.
-     */
-    public $form;
-    /**
      * @var array Key - value params to append to the view file
      */
-    public $additionalData = [];
+    public $innerData = [];
     /**
      * @var string
      */
@@ -74,7 +73,7 @@ class Repeater extends Widget
         parent::init();
 
         if ( !$this->id ) {
-            $this->id = Yii::$app->getSecurity()->generateRandomKey(6);
+            $this->id = Yii::$app->getSecurity()->generateRandomString(6);
         }
 
         if ( !$this->addButtonBlockClass ) {
@@ -85,16 +84,16 @@ class Repeater extends Widget
             $this->addButtonName = 'Add new item';
         }
 
-        if ( $this->addButtonClass ) {
+        if ( !$this->addButtonClass ) {
             $this->addButtonClass = 'btn btn-dark';
         }
 
         $this->_data = Json::encode([
             'widgetID' => $this->id,
-            'append' => $this->appendAction,
-            'remove' => $this->removeAction,
             'template' => $this->template,
-            'additionalInformation' => $this->additionalInformation,
+            'innerData' => $this->innerData,
+            'appendAction' => $this->appendAction,
+            'removeAction' => $this->removeAction,
         ]);
     }
 
@@ -125,17 +124,24 @@ class Repeater extends Widget
     private function renderByDiv()
     {
         echo Html::beginTag('div', ['class' => 'ab_repeater_' . $this->id]);
-        echo Html::tag('div', $this->generateContent(), ['class' => 'list-area']);
-        echo Html::tag(
-            'div',
-            Html::button($this->addButtonName, [
-                'type' => 'button',
-                'id' => 'new-repeater_' . $this->id,
-                'class' => $this->addButtonClass . ' new-repeater_' . $this->id,
-            ]),
-            [
-                'class' => $this->addButtonBlockClass
-            ]);
+            echo Html::tag(
+                'div',
+                $this->generateContent(),
+                [
+                    'class' => 'list-area'
+                ]
+            );
+            echo Html::tag(
+                'div',
+                Html::button($this->addButtonName, [
+                    'type' => 'button',
+                    'id' => 'new-repeater_' . $this->id,
+                    'class' => $this->addButtonClass . ' new-repeater_' . $this->id,
+                ]),
+                [
+                    'class' => $this->addButtonBlockClass
+                ]
+            );
         echo Html::endTag('div');
         $this->registerRepeater();
     }
@@ -149,16 +155,15 @@ class Repeater extends Widget
     private function generateContent(): void
     {
         foreach($this->models as $k => $model) {
-            $key = $k ?? 0;
+            $key = $k ?? 1;
 
             $content = $this->render($this->modelView, array_merge([
                 'k' => $key,
                 'model' => $model,
-                'form' => $this->form,
                 'widgetID' => $this->id,
-            ], $this->additionalData));
+            ], $this->innerData));
 
-            echo $this->render('repeater_div', [
+            echo $this->render('repeater_' . $this->template, [
                 'k' => $key,
                 'model' => $model,
                 'content' => $content,

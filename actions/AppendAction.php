@@ -1,32 +1,52 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: Arielb
- * Date: 11/24/2016
- * Time: 5:51 PM
+ * @author relbraun <https://github.com/relbraun>
+ * @source https://github.com/relbraun/yii2-repeater
+ *
+ * @author stop4uk <stop4uk@yandex.ru>
+ * @source https://github.com/stop4uk/Yii2Repeater
+ *
+ * @version 1.0
  */
 
-namespace relbraun\yii2repeater\actions;
+namespace stop4uk\yii2repeater\actions;
 
-
-use yii\base\Action;
+use yii\base\{
+    Action,
+    Model
+};
 
 class AppendAction extends Action
 {
-
     /**
-     * @var string full name of Model class
+     * @var Model|array $model
      */
     public $model;
 
+    /**
+     * @var string $contentPath
+     */
     public $contentPath;
 
     public function run()
     {
         $this->controller->viewPath = dirname(__DIR__) . '/views';
-        $id = \Yii::$app->request->post('id');
-        $model = new $this->model();
-//        $model = $model::findOne($id);
-        return $this->controller->renderPartial('repeater', ['model' => $model, 'contentPath' => $this->contentPath, 'k' => $id]);
+
+        $model = is_array($this->model) ? $this->model : new $this->model();
+
+        $id = Yii::$app->request->post('id');
+        $widgetID = Yii::$app->request->post('widgetID');
+        $template = Yii::$app->request->post('template');
+        $innerData = Yii::$app->request->post('innerData');
+
+        return $this->controller->renderAjax('repeater_' . $template, [
+            'k' => $id,
+            'model' => $model,
+            'contentPath' => $this->contentPath,
+            'widgetID' => $widgetID,
+            'innerData' => $innerData,
+            'template' => $template,
+        ]);
     }
 }

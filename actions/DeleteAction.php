@@ -1,36 +1,46 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: Arielb
- * Date: 11/24/2016
- * Time: 5:51 PM
+ * @author relbraun <https://github.com/relbraun>
+ * @source https://github.com/relbraun/yii2-repeater
+ *
+ * @author stop4uk <stop4uk@yandex.ru>
+ * @source https://github.com/stop4uk/Yii2Repeater
+ *
+ * @version 1.0
  */
 
-namespace relbraun\yii2repeater\actions;
-
+namespace stop4uk\yii2repeater\actions;
 
 use Yii;
 use yii\base\Action;
-use yii\db\ActiveRecord;
 use yii\web\Response;
+use yii\db\ActiveRecord;
 
 class DeleteAction extends Action
 {
     /**
-     * @var string full name of Model class
+     * @var ActiveRecord|string
      */
     public $model;
 
+    /**
+     * @var bool When need delete record from DB using model
+     */
+    public bool $removeFromDB = false;
 
     public function run()
     {
-        $id = \Yii::$app->request->post('id');
-        $model = $this->model;
-        /** @var ActiveRecord $model */
-        $model = $model::findOne($id);
-        $response = 0;
-        if($model){
-            $response = $model->delete();
+        $id = Yii::$app->request->post('id');
+        $response = 1;
+        if ( $this->removeFromDB ) {
+            $model = $this->model;
+            $model = $model::findOne($id);
+            $response = 0;
+
+            if( $model ){
+                $response = $model->delete();
+            }
         }
 
         Yii::$app->response->format = Response::FORMAT_JSON;

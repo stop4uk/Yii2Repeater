@@ -1,31 +1,38 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: Arielb
- * Date: 11/24/2016
- * Time: 4:07 PM
+ * @author relbraun <https://github.com/relbraun>
+ * @source https://github.com/relbraun/yii2-repeater
+ *
+ * @author stop4uk <stop4uk@yandex.ru>
+ * @source https://github.com/stop4uk/Yii2Repeater
+ *
+ * @version 1.0
  */
 
-namespace relbraun\yii2repeater;
+namespace stop4uk\yii2repeater;
 
-
-use yii\web\AssetBundle;
+use yii\web\{
+    AssetBundle,
+    YiiAsset
+};
+use yii\bootstrap5\BootstrapPluginAsset;
 
 class RepeaterAsset extends AssetBundle
 {
 
     public $sourcePath = __DIR__;
-    public $basePath = '@backend';
+    public $basePath = '@app';
 
     public $js = [
-        'js/js.js',
+        'js/repeater.js',
     ];
     public $css = [
-        'css/style.css',
+        'css/repeater.css',
     ];
 
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
+        YiiAsset::class,
+        BootstrapPluginAsset::class,
     ];
 }
