@@ -20,7 +20,7 @@ use yii\base\{
 class AppendAction extends Action
 {
     /**
-     * @var Model|array $model
+     * @var Model|array|null $model
      */
     public $model;
 
@@ -32,8 +32,9 @@ class AppendAction extends Action
     public function run()
     {
         $this->controller->viewPath = dirname(__DIR__) . '/views';
-
-        $model = is_array($this->model) ? $this->model : new $this->model();
+        if ( $this->model ) {
+            $model = is_array($this->model) ? $this->model : new $this->model();
+        }
 
         $id = Yii::$app->request->post('id');
         $widgetID = Yii::$app->request->post('widgetID');
